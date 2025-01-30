@@ -1,0 +1,13 @@
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\bin\Debug\Proyecto csharp.exe.config
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\bin\Debug\Proyecto csharp.exe
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\bin\Debug\Proyecto csharp.pdb
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto csharp.csproj.AssemblyReference.cache
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto_csharp.Properties.Resources.resources
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto csharp.csproj.GenerateResource.cache
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto csharp.csproj.CoreCompileInputs.cache
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto csharp.exe
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto csharp.pdb
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto_csharp.Ejercicios.Menuprincipal.resources
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto_csharp.Ejercicios.Historia.resources
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto_csharp.Ejercicios.Game.resources
+C:\Users\tuane\OneDrive\Documentos\Proyecto csharp\obj\Debug\Proyecto_csharp.Formularios_Maze_Runners.Reglas.resources
