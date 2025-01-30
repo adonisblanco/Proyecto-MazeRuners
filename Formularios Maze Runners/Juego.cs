@@ -31,24 +31,16 @@ namespace Proyecto_csharp.Ejercicios
         }
         private void MoveCurrentPlayer(Direction direction)
         {
-            // Verificar si hay movimientos disponibles
             if (remainingMoves <= 0)
             {
                 MessageBox.Show("No te quedan movimientos en este turno!");
                 return;
             }
 
-            // Obtener el jugador actual
-            if (currentPlayerTurn >= players.Count)
-            {
-                currentPlayerTurn = 0;
-            }
-
             Player currentPlayer = players[currentPlayerTurn];
             int newRow = currentPlayer.Row;
             int newCol = currentPlayer.Col;
 
-            // Calcular nueva posición según dirección
             switch (direction)
             {
                 case Direction.Up:
@@ -65,21 +57,26 @@ namespace Proyecto_csharp.Ejercicios
                     break;
             }
 
-            // Verificar si el movimiento es válido
             if (IsValidMove(newRow, newCol))
             {
-                // Guardar posición anterior
                 maze[currentPlayer.Row, currentPlayer.Col] = ' ';
-
-                // Actualizar posición del jugador
                 currentPlayer.Row = newRow;
                 currentPlayer.Col = newCol;
-                maze[newRow, newCol] = currentPlayer.Symbol;
 
+                // Verificar si llegó a la meta antes de actualizar la posición
+                if (maze[newRow, newCol] == 'E')
+                {
+                    MessageBox.Show($"¡El Jugador {currentPlayerTurn + 1} ({currentPlayer.Symbol}) ha ganado!");
+                    maze[newRow, newCol] = currentPlayer.Symbol;
+                    UpdateMazeDisplay(maze);
+                    ResetGame();
+                    return;
+                }
+
+                maze[newRow, newCol] = currentPlayer.Symbol;
                 remainingMoves--;
                 UpdateMazeDisplay(maze);
 
-                // Si no quedan movimientos, pasar al siguiente turno
                 if (remainingMoves <= 0)
                 {
                     NextTurn();
@@ -99,15 +96,30 @@ namespace Proyecto_csharp.Ejercicios
 
         private void NextTurn()
         {
-            currentPlayerTurn++;
-            if (currentPlayerTurn >= players.Count)
+            // Verificar si algún jugador llegó a la meta
+            Player currentPlayer = players[currentPlayerTurn];
+            if (maze[currentPlayer.Row, currentPlayer.Col] == 'E')
             {
-                currentPlayerTurn = 0;
+                MessageBox.Show($"¡El Jugador {currentPlayerTurn + 1} ({currentPlayer.Symbol}) ha ganado!");
+                ResetGame();
+                return;
             }
 
-            // Obtener nuevos movimientos del label
-            remainingMoves = int.Parse(labelmoves.Text);
-            MessageBox.Show($"Turno del Jugador {currentPlayerTurn + 1} ({players[currentPlayerTurn].Symbol})\nMovimientos disponibles: {remainingMoves}");
+            currentPlayerTurn = (currentPlayerTurn + 1) % players.Count;
+            remainingMoves = Moves();
+            labelmoves.Text = remainingMoves.ToString();
+
+            MessageBox.Show($"Turno del Jugador {currentPlayerTurn + 1} ({players[currentPlayerTurn].Symbol})\n" +
+                           $"Movimientos disponibles: {remainingMoves}");
+        }
+        private void ResetGame()
+        {
+            players.Clear();
+            maze = GenerateMultiPathMaze();
+            DisplayMaze(maze);
+            currentPlayerTurn = 0;
+            remainingMoves = 0;
+            labelmoves.Text = "0";
         }
 
         public enum Direction
@@ -122,7 +134,7 @@ namespace Proyecto_csharp.Ejercicios
             int playerCount = ValidateAndGetPlayerCount();
             if (playerCount == -1) return;
 
-            char[] playerSymbols = { '♠', '♣', '♥', '♦', 't' };
+            char[] playerSymbols = { '♠', '♣', '♥', '♦', '$' };
             Random random = new Random();
             players.Clear();
 
@@ -317,8 +329,17 @@ namespace Proyecto_csharp.Ejercicios
         }
         private void StartGame()
         {
+            if (players.Count == 0)
+            {
+                MessageBox.Show("¡Primero debes generar los jugadores!");
+                return;
+            }
+
+            currentPlayerTurn = 0;
+            remainingMoves = Moves();
+            labelmoves.Text = remainingMoves.ToString();
             MessageBox.Show($"Comienza el Jugador 1 ({players[0].Symbol})\nMovimientos disponibles: {remainingMoves}");
-        }
+         }
         private int Moves()
         {
             Random random = new Random();
@@ -330,6 +351,8 @@ namespace Proyecto_csharp.Ejercicios
         {
             int arg = Moves();
             labelmoves.Text = arg.ToString();
+            remainingMoves = Moves();
+            labelmoves.Text = remainingMoves.ToString();
             StartGame();
         }
 
