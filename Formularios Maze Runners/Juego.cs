@@ -19,6 +19,9 @@ namespace Proyecto_csharp.Ejercicios
         private RichTextBox rtbMaze;
         private int currentPlayerTurn = 0;
         private int remainingMoves = 0;
+        private List<(int row, int col, int type)> traps = new List<(int row, int col, int type)>();
+        private Random random = new Random();
+        private bool skipNextTurn = false;
         public class Player
         {
             public char Symbol { get; set; }
@@ -28,6 +31,90 @@ namespace Proyecto_csharp.Ejercicios
         public Game()
         {
             InitializeComponent();
+        }
+        // Agregar este método para generar las trampas
+        private void GenerateTraps()
+        {
+            traps.Clear();
+            List<(int row, int col)> validPositions = new List<(int row, int col)>();
+
+            // Encontrar todas las posiciones válidas del camino
+            for (int i = 0; i < maze.GetLength(0); i++)
+            {
+                for (int j = 0; j < maze.GetLength(1); j++)
+                {
+                    if (maze[i, j] == ' ' && !(i == 0 && j == 0) && !(i == maze.GetLength(0) - 1 && j == maze.GetLength(1) - 1))
+                    {
+                        validPositions.Add((i, j));
+                    }
+                }
+            }
+
+            // Generar 3 trampas de cada tipo
+            for (int trapType = 1; trapType <= 3; trapType++)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    if (validPositions.Count > 0)
+                    {
+                        int index = random.Next(validPositions.Count);
+                        traps.Add((validPositions[index].row, validPositions[index].col, trapType));
+                        validPositions.RemoveAt(index);
+                    }
+                }
+            }
+        }
+
+        // Modificar el método MoveCurrentPlayer para incluir la verificación de trampas
+        private void CheckForTrap(int row, int col)
+        {
+            var trap = traps.FirstOrDefault(t => t.row == row && t.col == col);
+
+            if (trap != default)
+            {
+                Player currentPlayer = players[currentPlayerTurn];
+
+                switch (trap.type)
+                {
+                    case 1: // Volver al inicio
+                        currentPlayer.Row = 0;
+                        currentPlayer.Col = 0;
+                        maze[row, col] = ' ';
+                        maze[0, 0] = currentPlayer.Symbol;
+                        MessageBox.Show("¡Has sido encontrado por una bruja!!! Vuelves al inicio de la misión");
+                        break;
+
+                    case 2: // Perder turno
+                        skipNextTurn = true;
+                        MessageBox.Show("¡Una bruja ha hechizado tu aura. No podrás moverte en el próximo turno!!!");
+                        break;
+
+                    case 3: // Teletransporte aleatorio
+                        List<(int row, int col)> validSpots = new List<(int row, int col)>();
+                        for (int i = 0; i < maze.GetLength(0); i++)
+                        {
+                            for (int j = 0; j < maze.GetLength(1); j++)
+                            {
+                                if (maze[i, j] == ' ')
+                                {
+                                    validSpots.Add((i, j));
+                                }
+                            }
+                        }
+
+                        if (validSpots.Count > 0)
+                        {
+                            var newPos = validSpots[random.Next(validSpots.Count)];
+                            maze[row, col] = ' ';
+                            currentPlayer.Row = newPos.row;
+                            currentPlayer.Col = newPos.col;
+                            maze[newPos.row, newPos.col] = currentPlayer.Symbol;
+                            MessageBox.Show("¡Has caído en un portal embrujado, ahora te irás a donde te envíe el destino!!!");
+                        }
+                        break;
+                }
+                UpdateMazeDisplay(maze);
+            }
         }
         private void MoveCurrentPlayer(Direction direction)
         {
@@ -66,7 +153,7 @@ namespace Proyecto_csharp.Ejercicios
                 // Verificar si llegó a la meta antes de actualizar la posición
                 if (maze[newRow, newCol] == 'E')
                 {
-                    MessageBox.Show($"¡El Jugador {currentPlayerTurn + 1} ({currentPlayer.Symbol}) ha ganado!");
+                    MessageBox.Show($"¡El Jugador {currentPlayerTurn + 1} ({currentPlayer.Symbol}) ha ganado!,, pudiste salvar a la humanidad del ataque de las brujas");
                     maze[newRow, newCol] = currentPlayer.Symbol;
                     UpdateMazeDisplay(maze);
                     ResetGame();
@@ -76,6 +163,7 @@ namespace Proyecto_csharp.Ejercicios
                 maze[newRow, newCol] = currentPlayer.Symbol;
                 remainingMoves--;
                 UpdateMazeDisplay(maze);
+                CheckForTrap(newRow, newCol);
 
                 if (remainingMoves <= 0)
                 {
@@ -100,9 +188,22 @@ namespace Proyecto_csharp.Ejercicios
             Player currentPlayer = players[currentPlayerTurn];
             if (maze[currentPlayer.Row, currentPlayer.Col] == 'E')
             {
-                MessageBox.Show($"¡El Jugador {currentPlayerTurn + 1} ({currentPlayer.Symbol}) ha ganado!");
+                MessageBox.Show($"¡El Jugador {currentPlayerTurn + 1} ({currentPlayer.Symbol}) ha ganado!, pudiste salvar a la humanidad del ataque de las brujas");
                 ResetGame();
                 return;
+            }
+            if (skipNextTurn)
+            {
+                remainingMoves = 0;
+                skipNextTurn = false;
+                labelmoves.Text = "0";
+                MessageBox.Show($"El Jugador {currentPlayerTurn + 1} pierde su turno por la trampa anterior");
+
+            }
+            else
+            {
+                remainingMoves = Moves();
+                labelmoves.Text = remainingMoves.ToString();
             }
 
             currentPlayerTurn = (currentPlayerTurn + 1) % players.Count;
@@ -289,6 +390,7 @@ namespace Proyecto_csharp.Ejercicios
         {
             MessageBox.Show("BIENVENIDO !!!");
             maze = GenerateMultiPathMaze();
+            GenerateTraps();
             DisplayMaze(maze);
             rtbMaze = (RichTextBox)Controls.Find("rtbMaze", true).FirstOrDefault();
         }

@@ -123,6 +123,9 @@ II) Para hacer que funcione toque en el botón de validar los jugadores
 III)Luego debes tocar en el botón de cantidad de movimientos
 IV)Con los botones de arriba, abajo, derecha e izquierda puedes realizar esa cantidad
      de movimientos en las direcciones que quieras
+V)Por el laberinto se van a encontrar las trampas ocultas
+VI)Las habilidades de los jugadores también serán adquiridas durante el juego
+VII)El objetivo es llegar a la posición final(E) que aparece en el laberinto
 </value>
   </data>
 </root>
