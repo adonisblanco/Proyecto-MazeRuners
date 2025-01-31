@@ -33,29 +33,17 @@ Características Principales
   Retorno al inicio
   Salto de turno
   Teletransporte aleatorio
- Distribución estratégica en el laberinto
- Implementación Técnica
- Estructura del Código
- Programación orientada a objetos
- Manejo de eventos para controles de usuario
- Sistema de coordenadas para posicionamiento
- Algoritmos de generación de laberintos
- Interfaz de Usuario
- Controles direccionales para movimiento
- Visualización del laberinto en tiempo real
- Indicadores de turno y movimientos restantes
- Mensajes informativos para el usuario
- Mecánicas de Juego
- Movimiento
- Sistema basado en turnos
+5. Mecánicas de Juego
+   Movimiento
+   Sistema basado en turnos
    4-5 movimientos por turno (aleatorio)
-    Validación de movimientos permitidos
-      Detección de colisiones con paredes
-  Condiciones de Victoria
- Llegar a la casilla marcada como 'E'
- Mensaje de victoria personalizado
- Opción de reinicio de partida
-Conclusiones
+   Validación de movimientos permitidos
+   Detección de colisiones con paredes
+   Condiciones de Victoria
+  Llegar a la casilla marcada como 'E'
+  Mensaje de victoria personalizado
+  Opción de reinicio de partida
+6. Conclusiones
 El juego combina elementos estratégicos con factores aleatorios, creando una experiencia dinámica y rejugable. La implementación técnica permite una fácil expansión y modificación de características.
 
 Tecnologías Utilizadas
