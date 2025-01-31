@@ -546,7 +546,7 @@ namespace Proyecto_csharp.Ejercicios
         private int Moves()
         {
             Random random = new Random();
-            int randomNumber = random.Next(4, 6);
+            int randomNumber = random.Next(1, 6);
             return randomNumber;
         }
 
