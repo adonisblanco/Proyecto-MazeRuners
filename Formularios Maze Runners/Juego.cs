@@ -22,6 +22,8 @@ namespace Proyecto_csharp.Ejercicios
         private List<(int row, int col, int type)> traps = new List<(int row, int col, int type)>();
         private Random random = new Random();
         private bool skipNextTurn = false;
+        private bool isPlayer2ImmuneToTrap = false;
+        private int nextTurnMovesMultiplier = 1;
         public class Player
         {
             public char Symbol { get; set; }
@@ -32,6 +34,95 @@ namespace Proyecto_csharp.Ejercicios
         {
             InitializeComponent();
         }
+        // Método principal para manejar las habilidades especiales
+        private void UseSpecialAbility()
+        {
+            if (remainingMoves != 5)
+            {
+                MessageBox.Show("¡La habilidad especial solo puede usarse cuando tienes exactamente 5 movimientos!");
+                return;
+            }
+
+            switch (currentPlayerTurn + 1)
+            {
+                case 1:
+                    Player1Ability();
+                    break;
+                case 2:
+                    Player2Ability();
+                    break;
+                case 3:
+                    Player3Ability();
+                    break;
+                case 4:
+                    Player4Ability();
+                    break;
+                case 5:
+                    Player5Ability();
+                    break;
+            }
+        }
+
+        private void Player1Ability()
+        {
+            int targetPlayer = (currentPlayerTurn + 0) % players.Count;
+            remainingMoves += 3;
+
+            if (remainingMoves < 0)
+            {
+                NextTurn();
+            }
+            MessageBox.Show($"¡Jugador 1 aumentó 3 movimientos del jugador {targetPlayer + 1}!");
+        }
+
+        private void Player2Ability()
+        {
+            isPlayer2ImmuneToTrap = true;
+            MessageBox.Show("¡Jugador 2 es inmune a la siguiente trampa!");
+        }
+
+        private void Player3Ability()
+        {
+            int nextPlayer = (currentPlayerTurn + 1) % players.Count;
+            Player nextPlayerObj = players[nextPlayer];
+
+            maze[nextPlayerObj.Row, nextPlayerObj.Col] = ' ';
+            nextPlayerObj.Row = 0;
+            nextPlayerObj.Col = 0;
+            maze[0, 0] = nextPlayerObj.Symbol;
+
+            MessageBox.Show("¡El siguiente jugador fue enviado al inicio!");
+            UpdateMazeDisplay(maze);
+        }
+
+        private void Player4Ability()
+        {
+            Player currentPlayer = players[currentPlayerTurn];
+            string nearestTraps = FindNearestTraps(currentPlayer.Row, currentPlayer.Col);
+            MessageBox.Show($"Las trampas más cercanas están en: {nearestTraps}");
+        }
+
+        private string FindNearestTraps(int playerRow, int playerCol)
+        {
+            var trapDistances = new List<(double distance, int row, int col)>();
+
+            foreach (var trap in traps)
+            {
+                double distance = Math.Sqrt(Math.Pow(playerRow - trap.row, 2) + Math.Pow(playerCol - trap.col, 2));
+                trapDistances.Add((distance, trap.row, trap.col));
+            }
+
+            var nearest = trapDistances.OrderBy(t => t.distance).Take(2);
+            return $"[{nearest.First().row},{nearest.First().col}] y [{nearest.ElementAt(1).row},{nearest.ElementAt(1).col}]";
+        }
+
+        private void Player5Ability()
+        {
+            nextTurnMovesMultiplier = 2;
+            MessageBox.Show("¡Los movimientos serán duplicados!");
+        }
+
+
         // Agregar este método para generar las trampas
         private void GenerateTraps()
         {
@@ -50,10 +141,10 @@ namespace Proyecto_csharp.Ejercicios
                 }
             }
 
-            // Generar 3 trampas de cada tipo
-            for (int trapType = 1; trapType <= 3; trapType++)
+            // Generar 4 trampas de cada tipo
+            for (int trapType = 1; trapType <= 4; trapType++)
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     if (validPositions.Count > 0)
                     {
@@ -69,6 +160,13 @@ namespace Proyecto_csharp.Ejercicios
         private void CheckForTrap(int row, int col)
         {
             var trap = traps.FirstOrDefault(t => t.row == row && t.col == col);
+
+            if (currentPlayerTurn + 1 == 2 && isPlayer2ImmuneToTrap)
+            {
+                MessageBox.Show("¡El Jugador 2 es inmune a esta trampa!");
+                isPlayer2ImmuneToTrap = false;
+                return;
+            }
 
             if (trap != default)
             {
@@ -86,7 +184,7 @@ namespace Proyecto_csharp.Ejercicios
 
                     case 2: // Perder turno
                         skipNextTurn = true;
-                        MessageBox.Show("¡Una bruja ha hechizado tu aura. No podrás moverte en el próximo turno!!!");
+                        MessageBox.Show("¡Una bruja ha mejorado tu aura. El siguiente jugador no podrá moverse!!!");
                         break;
 
                     case 3: // Teletransporte aleatorio
@@ -112,6 +210,7 @@ namespace Proyecto_csharp.Ejercicios
                             MessageBox.Show("¡Has caído en un portal embrujado, ahora te irás a donde te envíe el destino!!!");
                         }
                         break;
+                        
                 }
                 UpdateMazeDisplay(maze);
             }
@@ -192,27 +291,29 @@ namespace Proyecto_csharp.Ejercicios
                 ResetGame();
                 return;
             }
+
+            // Avanzar al siguiente jugador
+            currentPlayerTurn = (currentPlayerTurn + 1) % players.Count;
+
+            // Manejar la trampa de saltar turno
             if (skipNextTurn)
             {
-                remainingMoves = 0;
                 skipNextTurn = false;
-                labelmoves.Text = "0";
                 MessageBox.Show($"El Jugador {currentPlayerTurn + 1} pierde su turno por la trampa anterior");
-
+                NextTurn(); // Salta inmediatamente al siguiente jugador
+                return;
             }
-            else
-            {
-                remainingMoves = Moves();
-                labelmoves.Text = remainingMoves.ToString();
-            }
+            remainingMoves = Moves() * nextTurnMovesMultiplier;
+            nextTurnMovesMultiplier = 1; // Reiniciar multiplicador
 
-            currentPlayerTurn = (currentPlayerTurn + 1) % players.Count;
+            // Establecer movimientos para el siguiente jugador
             remainingMoves = Moves();
             labelmoves.Text = remainingMoves.ToString();
 
             MessageBox.Show($"Turno del Jugador {currentPlayerTurn + 1} ({players[currentPlayerTurn].Symbol})\n" +
                            $"Movimientos disponibles: {remainingMoves}");
-        }
+        
+         }
         private void ResetGame()
         {
             players.Clear();
@@ -445,7 +546,7 @@ namespace Proyecto_csharp.Ejercicios
         private int Moves()
         {
             Random random = new Random();
-            int randomNumber = random.Next(1, 6);
+            int randomNumber = random.Next(4, 6);
             return randomNumber;
         }
 
@@ -476,6 +577,11 @@ namespace Proyecto_csharp.Ejercicios
         private void left_Click(object sender, EventArgs e)
         {
             MoveCurrentPlayer(Direction.Left);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            UseSpecialAbility();
         }
     }
    

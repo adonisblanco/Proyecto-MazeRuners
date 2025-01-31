@@ -118,14 +118,23 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label2.Text" xml:space="preserve">
-    <value>I) Al empezar a jugar debe establecer la cantidad de jugadores
+    <value>I) Al empezar a jugar debe establecer la cantidad de jugadores(1-5)
+
 II) Para hacer que funcione toque en el botón de validar los jugadores
+
 III)Luego debes tocar en el botón de cantidad de movimientos
+
 IV)Con los botones de arriba, abajo, derecha e izquierda puedes realizar esa cantidad
      de movimientos en las direcciones que quieras
+
 V)Por el laberinto se van a encontrar las trampas ocultas
-VI)Las habilidades de los jugadores también serán adquiridas durante el juego
-VII)El objetivo es llegar a la posición final(E) que aparece en el laberinto
+
+VI)Las habilidades de los jugadores también serán adquiridas durante el juego cuando
+ saques 5 pasos
+
+VII)No puedes pasar por encima de otro jugador, funciona como un puente en el parchís
+
+VIII)El objetivo es llegar a la posición final(E) que aparece en el laberinto
 </value>
   </data>
 </root>
